@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapperxml.collection.CollectionMapper">
+
+    <!-- 除了特殊指定的 posts 属性, 其他属性也会有默认的映射 -->
+    <resultMap id="blogResult"
+               type="com.example.mapperxml.bean.Blog">
+        <collection property="posts" javaType="ArrayList"
+                    column="id" ofType="com.example.mapperxml.bean.Post"
+                    select="selectPostsForBlog"/>
+    </resultMap>
+
+    <select id="selectPostsForBlog" resultType="com.example.mapperxml.bean.Post">
+        SELECT * FROM post WHERE blog_id = #{idxxx}
+    </select>
+
+    <select id="selectBlog" resultMap="blogResult">
+        SELECT * FROM blog WHERE id = #{id}
+    </select>
+    
+    <resultMap id="blogResult2" type="com.example.mapperxml.bean.Blog">
+        <id property="id" column="blog_id" />
+        <result property="title" column="blog_title"/>
+        <collection columnPrefix="post_" property="posts"
+                    ofType="com.example.mapperxml.bean.Post">
+            <id property="id" column="id"/>
+            <result property="title" column="title"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectBlog2" resultMap="blogResult2">
+      select
+      b.id as blog_id,
+      b.title as blog_title,
+      p.id as post_id,
+      p.title as post_title
+      from blog b
+      left outer join post p on b.id = p.blog_id
+      where b.id = #{id}
+    </select>
+</mapper>

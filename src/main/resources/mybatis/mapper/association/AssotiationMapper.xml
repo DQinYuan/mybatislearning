@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapperxml.association.AssotiationMapper">
+
+    <resultMap id="blogResult" type="com.example.mapperxml.bean.Blog">
+        <!-- 关联查询, 会产生一次额外的数据访问 -->
+        <association property="author" column="author_id" select="selectAuthor"/>
+    </resultMap>
+
+    <select id="selectAuthor" resultType="com.example.mapperxml.bean.Author">
+        SELECT * FROM author WHERE id = #{id}
+    </select>
+
+    <select id="selectBlog" resultMap="blogResult">
+        SELECT * FROM blog WHERE id = #{id}
+    </select>
+
+    <resultMap id="blogResult2" type="com.example.mapperxml.bean.Blog">
+        <id property="id" column="blog_id"/>
+        <result property="title" column="blog_title"/>
+        <association property="author" columnPrefix="author_" column="blog_author_id" resultMap="authorResult"/>
+    </resultMap>
+
+    <resultMap id="authorResult" type="com.example.mapperxml.bean.Author">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <select id="selectBlog2" resultMap="blogResult2">
+      select
+        b.id            as blog_id,
+        b.title         as blog_title,
+        b.author_id     as blog_author_id,
+        a.id            as author_id,
+        a.name          as author_name
+      from blog b left outer join author a on b.author_id = a.id
+      where b.id = #{id}
+    </select>
+
+</mapper>
